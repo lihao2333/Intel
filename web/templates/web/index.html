@@ -1,0 +1,288 @@
+{% load staticfiles %}
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<meta charset="utf-8">
+
+<!-- Description, Keywords and Author -->
+<meta name="description" content="AInascere Gallery">
+
+<meta name="author" content="BUPT">
+
+<title>AInascere Gallery</title>
+
+<link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
+
+<!-- style -->
+
+<link href="{% static 'css/style.css'%}" rel="stylesheet">
+
+<!-- style -->
+
+<!-- bootstrap -->
+
+<link href="{% static 'css/bootstrap.min.css'%}" rel="stylesheet">
+
+<!-- responsive -->
+
+<link href="{% static 'css/responsive.css'%}" rel="stylesheet">
+
+<!-- font-awesome -->
+
+<link href="{% static 'css/font-awesome.min.css'%}" rel="stylesheet">
+
+<!-- Slider -->
+
+<link href="{% static 'css/jquery.fadeshow-0.1.1.min.css'%}" rel="stylesheet">
+
+
+</head>
+
+<body>
+<!-- slider -->
+
+<!-- <div class="background"></div>
+<div class="over-bg"></div> -->
+
+<!-- slider -->
+
+<main role="slider-container"> 
+  
+  <!-- side bar -->
+  
+  <aside role="siderbar-nav" class="side-bar">
+    <nav>
+      <ul class="nav nav-tabs">
+        <li class="active"><a data-toggle="tab" href="#home" title="Home"><i class="fa fa-home" aria-hidden="true"></i></a></li>
+        <li><a data-toggle="tab" href="#menu1" title="About"><i class="fa fa-info-circle" aria-hidden="true"></i></a></li>
+        <li><a data-toggle="tab" href="#menu2" title="Subscribe"><i class="fa fa-paper-plane" aria-hidden="true"></i></a></li>
+        <li><a data-toggle="tab" href="#menu3" title="Contact"><i class="fa fa-envelope" aria-hidden="true"></i></a></li>
+      </ul>
+    </nav>
+  </aside>
+  
+  <!-- side bar --> 
+  
+  <!-- header -->
+  
+  <header role="main-header">
+    <div class="container"> 
+      
+      <!-- logo -->   
+      <h1> <a href="index.html" title="AInascere Gallery"><img src="{% static 'images/logo.png'%}" alt="AInascere Gallery"/></a> </h1>
+      
+      <!-- logo --> 
+      
+      <!-- socil Icon -->
+      
+      <ul role="socil-icons">
+        <li><a href="#" target="_blank" title="twitter"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
+        <li><a href="#" target="_blank" title="facebook"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
+        <li><a href="#" target="_blank" title="google-plus"><i class="fa fa-google-plus" aria-hidden="true"></i></a></li>
+        <li><a href="#" target="_blank" title="pinterest"><i class="fa fa-pinterest" aria-hidden="true"></i></a></li>
+      </ul>
+    </div>
+  </header>
+  
+  <!-- header --> 
+  
+  <!-- main -->
+  
+  <main role="main" id="main">
+    <div class="container"> 
+      
+      <!-- tab-content -->
+      
+      <div class="tab-content"> 
+        
+        <!-- Home -->
+        
+        <section id="home" class="tab-pane home-pan fade in active">
+          <div class="background"></div>
+          <div class="over-bg"></div>
+        </section>
+        
+        <!-- Home --> 
+        
+        <!-- create -->
+        
+        <section id="menu1" class="tab-pane fade other-page about-pan">
+          <header role="page-title">
+            <h2>CREATION</h2>
+          </header>
+          <div class="col-md-4 item">
+            <div class="col-md-12">
+              {% for img in imgs %}
+              <img src='{{ img.img.url }}' />
+              {% endfor %}
+            </div>
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="file" name="img">
+                <button type="submit">上传</button>
+            </form>
+          </div>
+          <div class="col-md-7 item">
+            <ul class="grid effect-2" id="grid">
+              <!-- <ul id="wrap_p"></ul>  -->
+          </div>
+        </section>
+        
+        <!-- about --> 
+        
+        <!-- Newsletter Subscribtion -->
+        
+        <section id="menu2" class="tab-pane fade other-page">
+          <header role="page-title">
+            <h2>Newsletter Subscribtion</h2>
+          </header>
+          <article>
+            <p>Mauris rutrum risus ac luctus cursus. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Praesent vel quam id mi finibus tempor. </p>
+            
+            <!-- subscribe -->
+            
+            <div class="subscribe-pan">
+              <div class="ntify_form">
+                <form method="post" action="php/subscribe.php" name="subscribeform" id="subscribeform">
+                  <input name="email" type="email" id="subemail" placeholder="Enter Your Email...">
+                  <label>
+                    <input name="" type="submit" class="button-icon">
+                    <i class="fa fa-paper-plane" aria-hidden="true"></i> </label>
+                </form>
+                
+                <!-- subscribe message -->
+                
+                <div id="mesaj"></div>
+                
+                <!-- subscribe message --> 
+                
+              </div>
+            </div>
+            
+            <!-- subscribe --> 
+            
+          </article>
+        </section>
+        
+        <!-- Newsletter Subscribtion --> 
+        
+        <!-- Contact -->
+        
+        <section id="menu3" class="tab-pane fade other-page">
+          <header role="page-title">
+            <h2>Contact us</h2>
+          </header>
+          <article>
+            <p>Mauris rutrum risus ac luctus cursus. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Praesent vel quam id mi finibus tempor. </p>
+          </article>
+          
+          <!-- form -->
+          
+          <div class="contact-from row">
+            <div class="col-md-7 col-lg-7">
+              <div id="message"></div>
+              <form method="post" action="php/contact.php" name="cform" id="cform">
+                <div class="row">
+                  <div class="col-md-6 col-lg-6 col-sm-6">
+                    <input  name="name" id="name" type="text" placeholder="Enter Your Name...">
+                  </div>
+                  <div class="col-md-6 col-lg-6 col-sm-6">
+                    <input  name="email" id="email" type="email"  placeholder="Enter Your Email...">
+                  </div>
+                </div>
+                <div class="clearfix"></div>
+                <textarea name="comments" id="comments" cols="" rows="" placeholder="Enter Your Description..."></textarea>
+                <div class="clearfix"></div>
+                <input name="" type="submit" value="Submit">
+                <div id="simple-msg"></div>
+              </form>
+            </div>
+            <div class="clearfix"></div>
+          </div>
+          
+          <!-- form --> 
+          
+        </section>
+        
+        <!-- Contact --> 
+        
+      </div>
+      
+      <!-- tab-content --> 
+      
+    </div>
+  </main>
+  <!-- main --> 
+  
+  <!-- footer -->
+  
+  <!-- <footer role="footer">
+    <div class="container">
+      <p>&copy; All rights reserved. Floxi 2015</p>
+    </div>
+  </footer> -->
+</main>
+
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) --> 
+<script>
+
+    var pic_dir =  {{imgs_dir|safe}} ;
+    function addElementLi(obj, curdir) {
+        var ul = document.getElementById(obj);
+        　　　　//添加 li
+        var li = document.createElement("li");
+        var img = document.createElement('img'); 
+        li.appendChild(img)
+        // li.setAttribute("class", "shown");
+        img.setAttribute('src',curdir);
+        　　　　//设置 li 属性，如 id
+        ul.appendChild(li);
+    };
+    function load_sample_pic(){
+        for(curdir in  pic_dir){
+            addElementLi("grid", pic_dir[curdir]);
+        }
+    };
+    load_sample_pic();
+</script>
+
+<script src="{% static 'js/jquery.min.js'%}" type="text/javascript"></script> 
+
+<!-- custom --> 
+
+<script src="{% static 'js/custom.js'%}" type="text/javascript"></script> 
+<script src="{% static 'js/nav-custom.js'%}" type="text/javascript"></script> 
+
+<!-- Include all compiled plugins (below), or include individual files as needed --> 
+
+<script src="{% static 'js/bootstrap.min.js'%}" type="text/javascript"></script> 
+
+<!-- jquery.countdown --> 
+
+<!-- <script src="{% static 'js/countdown-js.js'%}" type="text/javascript"></script> --> 
+<script type="text/javascript" src="{% static 'js/jquery.contact.js'%}"></script> 
+
+<!-- slider --> 
+<script type="text/javascript" src="{% static 'js/background.cycle.js' %}"></script> 
+<script type="text/javascript" src="{% static 'js/background.cycle-custom.js' %}"></script> 
+<script src="{% static 'js/html5shiv.js' %}" type="text/javascript"></script> 
+
+<!--water full-->
+<script src="{% static 'js/masonry.pkgd.min.js' %}"></script>
+<script src="{% static 'js/imagesloaded.js' %}"></script>
+<script src="{% static 'js/modernizr.custom.js' %}"></script>
+<script src="{% static 'js/classie.js' %}"></script>
+<!-- <script src="assets/js/classie.js"></script> -->
+<script src="{% static 'js/AnimOnScroll.js' %}"></script>
+
+<script>
+        new AnimOnScroll( document.getElementById( 'grid' ), {
+            minDuration : 0.4,
+            maxDuration : 0.7,
+            viewportFactor : 0.2
+        } );
+        window.resizeTo(500, 500);
+    </script>
+</body>
+</html>

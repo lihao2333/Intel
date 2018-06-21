@@ -1,0 +1,507 @@
+{% load staticfiles %}
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<meta charset="utf-8">
+
+<!-- Description, Keywords and Author -->
+<meta name="description" content="AInascere Gallery">
+
+<meta name="author" content="BUPT">
+
+<title>AInascere Gallery</title>
+
+<link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
+
+<!-- style -->
+
+<link href="{% static 'css/style.css'%}" rel="stylesheet">
+
+<!-- style -->
+
+<!-- bootstrap -->
+
+<link href="{% static 'css/bootstrap.min.css'%}" rel="stylesheet">
+
+<!-- responsive -->
+
+<link href="{% static 'css/responsive.css'%}" rel="stylesheet">
+
+<!-- font-awesome -->
+
+<link href="{% static 'css/font-awesome.min.css'%}" rel="stylesheet">
+
+<!-- Slider -->
+
+<link href="{% static 'css/jquery.fadeshow-0.1.1.min.css'%}" rel="stylesheet">
+<style type="text/css">
+    *{padding:0;margin:0;}
+    #wrap_p{
+        margin:0 auto;
+    }
+    #wrap_p li{
+        width:200px;
+        float:left;
+        list-style:none;
+        margin:5px;
+        box-shadow: 0 1px 3px rgba(34,25,25,.4);
+        background:#eee;
+        /*margin:5px;*/
+        /*border:1px solid #ccc;*/
+        background:#eee;
+
+    }
+    .boxCont{
+        position:relative;
+        margin:0,auto;
+        background:#eee;
+        min-height: 180px
+    }
+    #wrap_p img{
+        display:block;
+        position: relative;
+        z-index: 1;
+        text-align: center;
+        margin: 5 auto;
+        padding: 15px;
+        max-width: 220px;
+        background:#eee;
+        opacity: 1;
+    }
+    #more_loading{
+        position:fixed;
+        bottom:9px;
+        display:none;
+    }
+</style>
+
+<script type="text/javascript">
+    var $ = function(o){
+         return document.getElementById(o) || o
+    };
+    var extent = function(destination, source) {
+        for (var property in source) {
+            destination[property] = source[property];
+        }
+    };
+    var Class = {
+      create: function() {
+            return function() {
+                this.initialize.apply(this, arguments);
+            }
+        }
+    };
+    var scrollImage=Class.create();
+    scrollImage.prototype={
+        initialize:function(options){
+                this.timer=null;
+                this.imgs=null;
+                this.intervalId=null;
+                this.startAjax=0;
+                this.setOptions(options);
+                this.liNumx=this.options.liNumx;
+                this.el=document.getElementById("wrap_p");
+                this.hTotal=[];
+                var that=this;
+                this.getImage.call(this);
+                window.onscroll=that.handler.bind(that);
+                this.checkImg();
+        },
+        setOptions:function(options){
+            this.options={
+                liNumx:6
+            };
+            extent(this.options,options||{});
+        },
+        stop : function () {
+            var that=this;
+            clearInterval(that.intervalId);
+            that.intervalId = null;
+        },
+        handler:function(){
+                var that=this;
+                if(this.timer){
+                    clearTimeout(that.timer);
+                }
+                that.timer = setTimeout(function(){
+                    that.imgs = null;    
+                },100);
+                var a=document.body.scrollHeight;
+                var b=document.documentElement.clientHeight;
+                var c=document.documentElement.scrollTop + document.body.scrollTop;
+                if(c+b>=a){
+
+                    setTimeout(function(){
+                        that.imgs=null;
+                        that.getImage.call(that);
+                        that.checkImg.call(that)
+                    },40);
+
+                }
+                that.checkImg();
+        },
+        getImage:function(){//ajax请求数据
+            if(!this.imgs){
+                    var arr=[];
+                    // var fso =  new ActiveXObject("Scripting.FileSystemObject"); 
+                    // var folder = fso.GetFolder("/static/images/portfolio");
+                    arr.length=15;
+                    this.startAjax++;
+                    for(var i=0;i<arr.length;i++){
+                        arr[i]={};
+                        arr[i].src="/static/images/portfolio/"+(i+1)+'.jpg';
+                        arr[i].sign=false;
+                        var li=document.createElement('li'),div=document.createElement('div'),
+                            img=document.createElement('img');
+                        div.appendChild(img);
+                        li.appendChild(div);
+                        div.className='boxCont';img.setAttribute('data-src',arr[i].src);
+                        this.el.appendChild(li);
+                        
+                        // p.innerHTML="我是第"+(i+1)+"张图片";
+                    }
+            }
+        },
+        checkImg:function(){
+                this.imgs = null;
+                this.getImgs();
+                var that=this;
+                if(this.imgs && this.imgs.length > 0){
+                    this.imgs.forEach(function(image,i){
+                        var src = image.getAttribute('data-src');
+                         if(src && !!that.isInScreen(image.parentNode.parentNode)){
+                            image.src=src;
+                            image.setAttribute('delsrc',i+1);
+                            image.removeAttribute('data-src');
+                            //if(that.attr("delsrc").length>that.liNumx||that.startAjax!=1){
+                                if (that.intervalId === null){                                
+                                    //that.sort.call(that,that.el);
+                                    that.intervalId=setInterval(that.sort.bind(that,that.el),40);
+                                }
+                                image.onload=function(){
+                                }
+                            //}
+                         }
+                         else{
+                            
+                            that.imgs=null;
+                         }
+                    });
+                }
+        },
+        sort:function(el){
+            if(!this.imgs||this.imgs.length==0){
+                this.stop();
+                //return;
+                //this.getImage();
+            }
+            var h = [];
+            var box = el.getElementsByTagName("li"); 
+            var minH, 
+            boxW = box[0].offsetWidth+10,
+            boxH,
+            n = document.documentElement.offsetWidth*0.50 / boxW | 0; 
+            for(var i = 0; i < box.length; i++) {
+                    boxh = box[i].offsetHeight; 
+                    if(i < n) { 
+                        h[i] = boxh;
+                        box[i].style.position = '';
+                    }
+                    else {
+                            minH = Math.min.apply({},h); 
+                            minKey = this.getkey(h, minH);
+                            h[minKey] += boxh ;
+                            box[i].style.position = 'absolute';
+                            box[i].style.top = minH + 'px';
+                            box[i].style.marginLeft = (minKey * boxW)+5 + 'px';
+                    }
+            }
+        },
+        getImgs:function(){
+                if(!this.imgs){
+                    this.imgs=this.attr('data-src');
+                }
+        },
+        getkey:function(s, v) {
+            for(k in s) {
+                if(s[k] == v) {
+                    return k;
+                }
+            }
+        },
+        attr:function(r,el){
+            var c=[];
+            if(/=/g.test(r)){
+                c=r.split("=");
+                var t=[];
+                var d=el?el.getElementsByTagName('*'):document.getElementsByTagName('*');
+                var y=[];
+                Array.prototype.push.apply(y,d);
+                y.forEach(function(u){
+                    if(u.getAttribute(c[0])&&u.getAttribute(c[0])==c[1]){
+                        t.push(u);
+                    }
+                });
+                return t;
+            }
+                var a=[];
+                var b=el?el.getElementsByTagName('*'):document.getElementsByTagName('*');
+                var x=[];
+                Array.prototype.push.apply(x, b);
+                x.forEach(function(d){
+                        if(d.getAttribute(r)){
+                                a.push(d);
+                        }
+                })
+                return a;
+        },
+        isInScreen:function(el){
+                var clientH=document.documentElement.clientHeight;
+                var scrollH=document.documentElement.scrollTop||document.body.scrollTop;
+                return this.getPos(el).y<clientH+scrollH;
+        },
+        getPos : function(o) {
+            for(var _pos = {x: 0, y: 0}; o; o = o.offsetParent) {
+                _pos.x += o.offsetLeft;
+                _pos.y += o.offsetTop;
+            }
+            return _pos;
+        }
+    };
+    window.onload=function(){    
+        var liNumx=document.documentElement.offsetWidth/200|0;
+        var uldd = document.getElementById("wrap_p")
+        uldd.style.width= liNumx*200+'px';
+        var option={liNumx:liNumx,el:$('wrap_p')}
+        new scrollImage(option);
+    }
+    window.onresize = function() {
+        var liNumx = document.documentElement.offsetWidth/200|0;
+        var uldd = document.getElementById("wrap_p")
+        uldd.style.width = liNumx*200+'px';
+        var option = {liNumx:liNumx,el:$('wrap_p')}
+        // new scrollImage(option);
+        };
+</script>
+</head>
+
+<body>
+<!-- slider -->
+
+<!-- <div class="background"></div>
+<div class="over-bg"></div> -->
+
+<!-- slider -->
+
+<main role="slider-container"> 
+  
+  <!-- side bar -->
+  
+  <aside role="siderbar-nav" class="side-bar">
+    <nav>
+      <ul class="nav nav-tabs">
+        <li class="active"><a data-toggle="tab" href="#home" title="Home"><i class="fa fa-home" aria-hidden="true"></i></a></li>
+        <li><a data-toggle="tab" href="#menu1" title="About"><i class="fa fa-info-circle" aria-hidden="true"></i></a></li>
+        <li><a data-toggle="tab" href="#menu2" title="Subscribe"><i class="fa fa-paper-plane" aria-hidden="true"></i></a></li>
+        <li><a data-toggle="tab" href="#menu3" title="Contact"><i class="fa fa-envelope" aria-hidden="true"></i></a></li>
+      </ul>
+    </nav>
+  </aside>
+  
+  <!-- side bar --> 
+  
+  <!-- header -->
+  
+  <header role="main-header">
+    <div class="container"> 
+      
+      <!-- logo -->   
+      <h1> <a href="index.html" title="AInascere Gallery"><img src="{% static 'images/logo.png'%}" alt="AInascere Gallery"/></a> </h1>
+      
+      <!-- logo --> 
+      
+      <!-- socil Icon -->
+      
+      <ul role="socil-icons">
+        <li><a href="#" target="_blank" title="twitter"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
+        <li><a href="#" target="_blank" title="facebook"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
+        <li><a href="#" target="_blank" title="google-plus"><i class="fa fa-google-plus" aria-hidden="true"></i></a></li>
+        <li><a href="#" target="_blank" title="pinterest"><i class="fa fa-pinterest" aria-hidden="true"></i></a></li>
+      </ul>
+    </div>
+  </header>
+  
+  <!-- header --> 
+  
+  <!-- main -->
+  
+  <main role="main" id="main">
+    <div class="container"> 
+      
+      <!-- tab-content -->
+      
+      <div class="tab-content"> 
+        
+        <!-- Home -->
+        
+        <section id="home" class="tab-pane home-pan fade in active">
+          <div class="background"></div>
+          <div class="over-bg"></div>
+          <!-- <article class="home-content">
+            <header role="home-title">
+              <h2>We are
+                <div id="typed-strings"><span>passionate</span> <span>dedicated</span> <span>Floxi</span> </div>
+                <span id="typed" style="white-space:pre;"></span></h2>
+            </header>
+            <p>We're sorry, our website is now under construction. We are working<br/>
+              hard to deliver you a great viewing experience!
+            <p> 
+          </article> -->
+          <!-- <div id="countdown"></div> -->
+        </section>
+        
+        <!-- Home --> 
+        
+        <!-- about -->
+        
+        <section id="menu1" class="tab-pane fade other-page about-pan">
+          <header role="page-title">
+            <h2>CREATION</h2>
+          </header>
+          <div class="col-md-4 item">
+            <div class="col-md-12">
+              {% for img in imgs %}
+              <img src='{{ img.img.url }}' />
+              {% endfor %}
+            </div>
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="file" name="img">
+                <button type="submit">上传</button>
+            </form>
+          </div>
+          <div class="col-md-7 item">
+              <ul id="wrap_p"></ul> 
+          </div>
+        </section>
+        
+        <!-- about --> 
+        
+        <!-- Newsletter Subscribtion -->
+        
+        <section id="menu2" class="tab-pane fade other-page">
+          <header role="page-title">
+            <h2>Newsletter Subscribtion</h2>
+          </header>
+          <article>
+            <p>Mauris rutrum risus ac luctus cursus. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Praesent vel quam id mi finibus tempor. </p>
+            
+            <!-- subscribe -->
+            
+            <div class="subscribe-pan">
+              <div class="ntify_form">
+                <form method="post" action="php/subscribe.php" name="subscribeform" id="subscribeform">
+                  <input name="email" type="email" id="subemail" placeholder="Enter Your Email...">
+                  <label>
+                    <input name="" type="submit" class="button-icon">
+                    <i class="fa fa-paper-plane" aria-hidden="true"></i> </label>
+                </form>
+                
+                <!-- subscribe message -->
+                
+                <div id="mesaj"></div>
+                
+                <!-- subscribe message --> 
+                
+              </div>
+            </div>
+            
+            <!-- subscribe --> 
+            
+          </article>
+        </section>
+        
+        <!-- Newsletter Subscribtion --> 
+        
+        <!-- Contact -->
+        
+        <section id="menu3" class="tab-pane fade other-page">
+          <header role="page-title">
+            <h2>Contact us</h2>
+          </header>
+          <article>
+            <p>Mauris rutrum risus ac luctus cursus. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Praesent vel quam id mi finibus tempor. </p>
+          </article>
+          
+          <!-- form -->
+          
+          <div class="contact-from row">
+            <div class="col-md-7 col-lg-7">
+              <div id="message"></div>
+              <form method="post" action="php/contact.php" name="cform" id="cform">
+                <div class="row">
+                  <div class="col-md-6 col-lg-6 col-sm-6">
+                    <input  name="name" id="name" type="text" placeholder="Enter Your Name...">
+                  </div>
+                  <div class="col-md-6 col-lg-6 col-sm-6">
+                    <input  name="email" id="email" type="email"  placeholder="Enter Your Email...">
+                  </div>
+                </div>
+                <div class="clearfix"></div>
+                <textarea name="comments" id="comments" cols="" rows="" placeholder="Enter Your Description..."></textarea>
+                <div class="clearfix"></div>
+                <input name="" type="submit" value="Submit">
+                <div id="simple-msg"></div>
+              </form>
+            </div>
+            <div class="clearfix"></div>
+          </div>
+          
+          <!-- form --> 
+          
+        </section>
+        
+        <!-- Contact --> 
+        
+      </div>
+      
+      <!-- tab-content --> 
+      
+    </div>
+  </main>
+  <!-- main --> 
+  
+  <!-- footer -->
+  
+  <!-- <footer role="footer">
+    <div class="container">
+      <p>&copy; All rights reserved. Floxi 2015</p>
+    </div>
+  </footer> -->
+</main>
+
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) --> 
+
+<script src="{% static 'js/jquery.min.js'%}" type="text/javascript"></script> 
+
+<!-- custom --> 
+
+<script src="{% static 'js/custom.js'%}" type="text/javascript"></script> 
+<script src="{% static 'js/nav-custom.js'%}" type="text/javascript"></script> 
+
+<!-- Include all compiled plugins (below), or include individual files as needed --> 
+
+<script src="{% static 'js/bootstrap.min.js'%}" type="text/javascript"></script> 
+
+<!-- jquery.countdown --> 
+
+<!-- <script src="{% static 'js/countdown-js.js'%}" type="text/javascript"></script> --> 
+<script type="text/javascript" src="{% static 'js/jquery.contact.js'%}"></script> 
+
+<!-- slider --> 
+<script type="text/javascript" src="{% static 'js/background.cycle.js' %}"></script> 
+<script type="text/javascript" src="{% static 'js/background.cycle-custom.js' %}"></script> 
+<script src="{% static 'js/html5shiv.js' %}" type="text/javascript"></script> 
+</body>
+</html>
